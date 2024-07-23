@@ -2,23 +2,25 @@ package com.example.citymanagement.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Set;
 
 @Entity
 @Data
-public class Person {
+@EqualsAndHashCode(exclude = "persons")
+@ToString(exclude = "persons")
+public class House {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "passport_id", referencedColumnName = "id")
-    private Passport passport;
+    private String address;
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "house_person",
-            joinColumns = {@JoinColumn(name = "person_id")},
-            inverseJoinColumns = {@JoinColumn(name = "house_id")})
-    private Set<House> houses;
+            joinColumns = {@JoinColumn(name = "house_id")},
+            inverseJoinColumns = {@JoinColumn(name = "person_id")}
+    )
+    private Set<Person> persons;
 }

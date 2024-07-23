@@ -1,11 +1,15 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url:
-    password:
-    username:
+    url: jdbc:postgresql://localhost:5432/city_management
+    password: postgres
+    username: postgres
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   liquibase:
     enabled: false

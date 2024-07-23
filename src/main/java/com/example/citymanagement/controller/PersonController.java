@@ -1,10 +1,9 @@
 package com.example.citymanagement.controller;
 
 import com.example.citymanagement.model.Person;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -12,8 +11,17 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/person")
 public interface PersonController {
     @PostMapping()
-    Person savePerson(Person person);
-    @GetMapping()
-    List<Person> getPersons();
+    ResponseEntity<Person> savePerson(@RequestBody Person person);
 
+    @GetMapping("/all")
+    ResponseEntity<List<Person>> getPersons();
+
+    @GetMapping("/{id}")
+    ResponseEntity<Person> getPerson(@PathVariable("id") Long id);
+
+    @DeleteMapping()
+    ResponseEntity<HttpStatus> deletePerson(@RequestBody Person person);
+
+    @PutMapping("/{id}")
+    ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person person);
 }
