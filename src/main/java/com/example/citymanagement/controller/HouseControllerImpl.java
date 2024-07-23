@@ -1,44 +1,44 @@
 package com.example.citymanagement.controller;
 
-import com.example.citymanagement.model.House;
+import com.example.citymanagement.dto.HouseDto;
+import com.example.citymanagement.dto.HouseMapper;
 import com.example.citymanagement.service.HouseServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
 public class HouseControllerImpl implements HouseController {
 
-    private HouseServiceImpl houseServiceImpl;
+    private final HouseServiceImpl houseServiceImpl;
+    private final HouseMapper houseMapper;
 
     @Override
-    public ResponseEntity<House> saveHouse(House house) {
-        return houseServiceImpl.saveHouse(house);
+    public ResponseEntity<HouseDto> saveHouse(HouseDto houseDto) {
+        return houseServiceImpl.saveHouse(houseMapper.toHouse(houseDto));
     }
 
     @Override
-    public ResponseEntity<List<House>> getHouses() {
+    public ResponseEntity<Set<HouseDto>> getHouses() {
         return houseServiceImpl.findAllHouses();
     }
 
     @Override
-    public ResponseEntity<House> getHouse(Long id) {
+    public ResponseEntity<HouseDto> getHouse(Long id) {
         return houseServiceImpl.findHouseById(id);
     }
 
     @Override
-    public ResponseEntity<HttpStatus> deleteHouse(House house) {
-        return houseServiceImpl.deleteHouse(house);
+    public ResponseEntity<HttpStatus> deleteHouse(HouseDto houseDto) {
+        return houseServiceImpl.deleteHouse(houseMapper.toHouse(houseDto));
     }
 
     @Override
-    public ResponseEntity<House> updateHouse(@PathVariable Long id, @RequestBody House house) {
-        return houseServiceImpl.updateHouse(id, house);
+    public ResponseEntity<HouseDto> updateHouse(Long id, HouseDto houseDto) {
+        return houseServiceImpl.updateHouse(id, houseMapper.toHouse(houseDto));
     }
 }

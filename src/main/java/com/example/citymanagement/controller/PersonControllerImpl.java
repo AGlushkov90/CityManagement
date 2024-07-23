@@ -1,44 +1,44 @@
 package com.example.citymanagement.controller;
 
-import com.example.citymanagement.model.Person;
+import com.example.citymanagement.dto.PersonDto;
+import com.example.citymanagement.dto.PersonMapper;
 import com.example.citymanagement.service.PersonServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
 public class PersonControllerImpl implements PersonController {
 
-    private PersonServiceImpl personServiceImpl;
+    private final PersonServiceImpl personServiceImpl;
+    private final PersonMapper personMapper;
 
     @Override
-    public ResponseEntity<Person> savePerson(Person person) {
-        return personServiceImpl.savePerson(person);
+    public ResponseEntity<PersonDto> savePerson(PersonDto personDto) {
+        return personServiceImpl.savePerson(personMapper.toPerson(personDto));
     }
 
     @Override
-    public ResponseEntity<List<Person>> getPersons() {
+    public ResponseEntity<Set<PersonDto>> getPersons() {
         return personServiceImpl.findAllPersons();
     }
 
     @Override
-    public ResponseEntity<Person> getPerson(Long id) {
+    public ResponseEntity<PersonDto> getPerson(Long id) {
         return personServiceImpl.findPersonById(id);
     }
 
     @Override
-    public ResponseEntity<HttpStatus> deletePerson(Person person) {
-        return personServiceImpl.deletePerson(person);
+    public ResponseEntity<HttpStatus> deletePerson(PersonDto personDto) {
+        return personServiceImpl.deletePerson(personDto);
     }
 
     @Override
-    public ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person person) {
-        return personServiceImpl.updatePerson(id, person);
+    public ResponseEntity<PersonDto> updatePerson(Long id, PersonDto personDto) {
+        return personServiceImpl.updatePerson(id, personMapper.toPerson(personDto));
     }
 }

@@ -1,27 +1,27 @@
 package com.example.citymanagement.controller;
 
-import com.example.citymanagement.model.Person;
+import com.example.citymanagement.dto.PersonDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/api/v1/person")
 public interface PersonController {
     @PostMapping()
-    ResponseEntity<Person> savePerson(@RequestBody Person person);
+    ResponseEntity<PersonDto> savePerson(@RequestBody PersonDto personDto);
 
     @GetMapping("/all")
-    ResponseEntity<List<Person>> getPersons();
+    ResponseEntity<Set<PersonDto>> getPersons();
 
     @GetMapping("/{id}")
-    ResponseEntity<Person> getPerson(@PathVariable("id") Long id);
+    ResponseEntity<PersonDto> getPerson(@PathVariable("id") Long id);
 
     @DeleteMapping()
-    ResponseEntity<HttpStatus> deletePerson(@RequestBody Person person);
+    ResponseEntity<HttpStatus> deletePerson(@RequestBody PersonDto personDto);
 
     @PutMapping("/{id}")
-    ResponseEntity<Person> updatePerson(@PathVariable Long id, @RequestBody Person person);
+    ResponseEntity<PersonDto> updatePerson(@PathVariable Long id, @RequestBody PersonDto personDto);
 }

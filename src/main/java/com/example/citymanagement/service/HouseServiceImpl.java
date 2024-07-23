@@ -1,5 +1,8 @@
 package com.example.citymanagement.service;
 
+import com.example.citymanagement.dto.HouseDto;
+import com.example.citymanagement.dto.HouseMapper;
+import com.example.citymanagement.dto.PersonMapper;
 import com.example.citymanagement.model.House;
 import com.example.citymanagement.model.Person;
 import com.example.citymanagement.repository.HouseRepository;
@@ -11,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,20 +23,24 @@ public class HouseServiceImpl {
 
     private final PersonRepository personRepository;
     private final HouseRepository houseRepository;
+    private final HouseMapper houseMapper;
+    private final PersonMapper personMapper;
 
     @Transactional
-    public ResponseEntity<House> saveHouse(House house) {
+    public ResponseEntity<HouseDto> saveHouse(House house) {
         try {
             Set<Person> personSet = new HashSet<>();
             findHouse(personSet, house);
             house.setPersons(personSet);
-            return new ResponseEntity<>(houseRepository.save(house), HttpStatus.OK);
+            return new ResponseEntity<>(houseMapper.toHouseDto(houseRepository.save(house)), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public ResponseEntity<House> updateHouse(Long id, House house) {
+    @Transactional
+    public ResponseEntity<HouseDto> updateHouse(Long id, House house) {
+        try {
         Optional<House> houseData = houseRepository.findById(id);
         if (houseData.isPresent()) {
             House currenthouse = houseData.get();
@@ -42,21 +48,26 @@ public class HouseServiceImpl {
             Set<Person> personSet = new HashSet<>();
             findHouse(personSet, house);
             currenthouse.setPersons(personSet);
-            return new ResponseEntity<>(houseRepository.save(currenthouse), HttpStatus.OK);
+            return new ResponseEntity<>(houseMapper.toHouseDto(houseRepository.save(currenthouse)), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public ResponseEntity<List<House>> findAllHouses() {
-        return new ResponseEntity<>(houseRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<Set<HouseDto>> findAllHouses() {
+        return new ResponseEntity<>(personMapper.toHouseDtoList(new HashSet<>(houseRepository.findAll())), HttpStatus.OK);
     }
 
-    public ResponseEntity<House> findHouseById(Long id) {
+    public ResponseEntity<HouseDto> findHouseById(Long id) {
         Optional<House> houseData = houseRepository.findById(id);
-        return houseData.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return houseData.map(house -> new ResponseEntity<>(houseMapper.toHouseDto(house), HttpStatus.OK)).
+                orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @Transactional
     public ResponseEntity<HttpStatus> deleteHouse(House house) {
         try {
             houseRepository.deleteById((long) house.getId());

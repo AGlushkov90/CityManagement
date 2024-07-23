@@ -1,5 +1,8 @@
 package com.example.citymanagement.service;
 
+import com.example.citymanagement.dto.HouseMapper;
+import com.example.citymanagement.dto.PersonDto;
+import com.example.citymanagement.dto.PersonMapper;
 import com.example.citymanagement.model.House;
 import com.example.citymanagement.model.Passport;
 import com.example.citymanagement.model.Person;
@@ -12,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,9 +24,11 @@ public class PersonServiceImpl {
 
     private final PersonRepository personRepository;
     private final HouseRepository houseRepository;
+    private final PersonMapper personMapper;
+    private final HouseMapper houseMapper;
 
     @Transactional
-    public ResponseEntity<Person> savePerson(Person person) {
+    public ResponseEntity<PersonDto> savePerson(Person person) {
         try {
             Set<House> houseSet = new HashSet<>();
             findHouse(houseSet, person);
@@ -32,13 +36,15 @@ public class PersonServiceImpl {
             Passport passport = new Passport();
             passport.setNumber(generateNumber());
             person.setPassport(passport);
-            return new ResponseEntity<>(personRepository.save(person), HttpStatus.OK);
+            return new ResponseEntity<>(personMapper.toPersonDto(personRepository.save(person)), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public ResponseEntity<Person> updatePerson(Long id, Person person) {
+    @Transactional
+    public ResponseEntity<PersonDto> updatePerson(Long id, Person person) {
+        try {
         Optional<Person> personData = personRepository.findById(id);
         if (personData.isPresent()) {
             Person currentPerson = personData.get();
@@ -46,24 +52,29 @@ public class PersonServiceImpl {
             Set<House> houseSet = new HashSet<>();
             findHouse(houseSet, person);
             currentPerson.setHouses(houseSet);
-            return new ResponseEntity<>(personRepository.save(currentPerson), HttpStatus.OK);
+            return new ResponseEntity<>(personMapper.toPersonDto(personRepository.save(currentPerson)), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    public ResponseEntity<List<Person>> findAllPersons() {
-        return new ResponseEntity<>(personRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<Set<PersonDto>> findAllPersons() {
+        return new ResponseEntity<>(houseMapper.toPersonDtoList(new HashSet<>(personRepository.findAll())), HttpStatus.OK);
     }
 
-    public ResponseEntity<Person> findPersonById(Long id) {
+    public ResponseEntity<PersonDto> findPersonById(Long id) {
         Optional<Person> personData = personRepository.findById(id);
-        return personData.map(person -> new ResponseEntity<>(person, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return personData.map(person -> new ResponseEntity<>(personMapper.toPersonDto(person), HttpStatus.OK)).
+                orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    public ResponseEntity<HttpStatus> deletePerson(Person person) {
+    @Transactional
+    public ResponseEntity<HttpStatus> deletePerson(PersonDto personDto) {
         try {
-            personRepository.deleteById((long) person.getId());
+            personRepository.deleteById((long) personDto.getId());
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
