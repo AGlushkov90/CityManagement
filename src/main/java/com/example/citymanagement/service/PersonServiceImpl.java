@@ -3,6 +3,7 @@ package com.example.citymanagement.service;
 import com.example.citymanagement.dto.HouseMapper;
 import com.example.citymanagement.dto.PersonDto;
 import com.example.citymanagement.dto.PersonMapper;
+import com.example.citymanagement.exception.EntityNotFoundException;
 import com.example.citymanagement.model.House;
 import com.example.citymanagement.model.Passport;
 import com.example.citymanagement.model.Person;
@@ -68,7 +69,7 @@ public class PersonServiceImpl {
     public ResponseEntity<PersonDto> findPersonById(Long id) {
         Optional<Person> personData = personRepository.findById(id);
         return personData.map(person -> new ResponseEntity<>(personMapper.toPersonDto(person), HttpStatus.OK)).
-                orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                orElseThrow(() -> new EntityNotFoundException("Person not found ", id));
     }
 
     @Transactional

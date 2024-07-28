@@ -9,6 +9,6 @@ import java.util.Set;
 public class PersonDto {
     private int id;
     private String name;
-    private Passport passport;
+    private PassportDto passport;
     private Set<HouseDto> houses;
 }
