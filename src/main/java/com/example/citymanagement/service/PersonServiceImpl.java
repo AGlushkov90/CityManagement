@@ -1,9 +1,9 @@
 package com.example.citymanagement.service;
 
-import com.example.citymanagement.dto.HouseMapper;
-import com.example.citymanagement.dto.PersonDto;
-import com.example.citymanagement.dto.PersonMapper;
+import com.example.citymanagement.exception.EntityNotCreatedException;
+import com.example.citymanagement.exception.EntityNotDeletedException;
 import com.example.citymanagement.exception.EntityNotFoundException;
+import com.example.citymanagement.exception.EntityNotUpdatedException;
 import com.example.citymanagement.model.House;
 import com.example.citymanagement.model.Passport;
 import com.example.citymanagement.model.Person;
@@ -25,26 +25,25 @@ public class PersonServiceImpl {
 
     private final PersonRepository personRepository;
     private final HouseRepository houseRepository;
-    private final PersonMapper personMapper;
-    private final HouseMapper houseMapper;
+
+    private final PassportServiceImpl passportService;
 
     @Transactional
-    public ResponseEntity<PersonDto> savePerson(Person person) {
+    public Person savePerson(Person person) {
         try {
             Set<House> houseSet = new HashSet<>();
             findHouse(houseSet, person);
             person.setHouses(houseSet);
-            Passport passport = new Passport();
-            passport.setNumber(generateNumber());
+            Passport passport = passportService.savePassport();
             person.setPassport(passport);
-            return new ResponseEntity<>(personMapper.toPersonDto(personRepository.save(person)), HttpStatus.OK);
+            return personRepository.save(person);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new EntityNotCreatedException("Person not created");
         }
     }
 
     @Transactional
-    public ResponseEntity<PersonDto> updatePerson(Long id, Person person) {
+    public Person updatePerson(Long id, Person person) {
         try {
         Optional<Person> personData = personRepository.findById(id);
         if (personData.isPresent()) {
@@ -53,41 +52,34 @@ public class PersonServiceImpl {
             Set<House> houseSet = new HashSet<>();
             findHouse(houseSet, person);
             currentPerson.setHouses(houseSet);
-            return new ResponseEntity<>(personMapper.toPersonDto(personRepository.save(currentPerson)), HttpStatus.OK);
+            return personRepository.save(currentPerson);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new EntityNotFoundException("Person not found", id);
         }
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new EntityNotUpdatedException("Person not updated", id);
         }
     }
 
-    public ResponseEntity<Set<PersonDto>> findAllPersons() {
-        return new ResponseEntity<>(houseMapper.toPersonDtoList(new HashSet<>(personRepository.findAll())), HttpStatus.OK);
+    public Set<Person> findAllPersons() {
+        return new HashSet<>(personRepository.findAll());
     }
 
-    public ResponseEntity<PersonDto> findPersonById(Long id) {
+    public Person findPersonById(Long id) {
         Optional<Person> personData = personRepository.findById(id);
-        return personData.map(person -> new ResponseEntity<>(personMapper.toPersonDto(person), HttpStatus.OK)).
+        return personData.
                 orElseThrow(() -> new EntityNotFoundException("Person not found ", id));
     }
 
     @Transactional
-    public ResponseEntity<HttpStatus> deletePerson(PersonDto personDto) {
+    public ResponseEntity<HttpStatus> deletePerson(Person person) {
+        long personId = person.getId();
         try {
-            personRepository.deleteById((long) personDto.getId());
+            personRepository.deleteById(personId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new EntityNotDeletedException("Person not deleted", personId);
         }
-    }
-
-    private String generateNumber() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 10; i++) {
-            sb.append(1 + (int) (Math.random() * 9));
-        }
-        return sb.toString();
     }
 
     private void findHouse(Set<House> houseSet, Person person) {

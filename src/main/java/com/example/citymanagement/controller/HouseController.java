@@ -23,5 +23,5 @@ public interface HouseController {
     ResponseEntity<HttpStatus> deleteHouse(@RequestBody HouseDto houseDto);
 
     @PutMapping("/{id}")
-    ResponseEntity<HouseDto> updateHouse(@PathVariable Long id, @RequestBody HouseDto houseDto);
+    ResponseEntity<HouseDto> updateHouse(@PathVariable("id") Long id, @RequestBody HouseDto houseDto);
 }

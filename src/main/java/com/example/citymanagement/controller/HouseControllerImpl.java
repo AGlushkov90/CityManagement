@@ -19,17 +19,17 @@ public class HouseControllerImpl implements HouseController {
 
     @Override
     public ResponseEntity<HouseDto> saveHouse(HouseDto houseDto) {
-        return houseServiceImpl.saveHouse(houseMapper.toHouse(houseDto));
+        return new ResponseEntity<>(houseMapper.toHouseDto(houseServiceImpl.saveHouse(houseMapper.toHouse(houseDto))), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Set<HouseDto>> getHouses() {
-        return houseServiceImpl.findAllHouses();
+        return new ResponseEntity<>(houseMapper.toHouseDtoList(houseServiceImpl.findAllHouses()), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<HouseDto> getHouse(Long id) {
-        return houseServiceImpl.findHouseById(id);
+        return new ResponseEntity<>(houseMapper.toHouseDto(houseServiceImpl.findHouseById(id)), HttpStatus.OK);
     }
 
     @Override
@@ -39,6 +39,6 @@ public class HouseControllerImpl implements HouseController {
 
     @Override
     public ResponseEntity<HouseDto> updateHouse(Long id, HouseDto houseDto) {
-        return houseServiceImpl.updateHouse(id, houseMapper.toHouse(houseDto));
+        return new ResponseEntity<>(houseMapper.toHouseDto(houseServiceImpl.updateHouse(id, houseMapper.toHouse(houseDto))), HttpStatus.OK);
     }
 }

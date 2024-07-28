@@ -23,5 +23,5 @@ public interface PersonController {
     ResponseEntity<HttpStatus> deletePerson(@RequestBody PersonDto personDto);
 
     @PutMapping("/{id}")
-    ResponseEntity<PersonDto> updatePerson(@PathVariable Long id, @RequestBody PersonDto personDto);
+    ResponseEntity<PersonDto> updatePerson(@PathVariable("id") Long id, @RequestBody PersonDto personDto);
 }

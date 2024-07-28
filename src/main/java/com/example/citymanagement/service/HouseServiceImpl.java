@@ -1,8 +1,9 @@
 package com.example.citymanagement.service;
 
-import com.example.citymanagement.dto.HouseDto;
-import com.example.citymanagement.dto.HouseMapper;
-import com.example.citymanagement.dto.PersonMapper;
+import com.example.citymanagement.exception.EntityNotCreatedException;
+import com.example.citymanagement.exception.EntityNotDeletedException;
+import com.example.citymanagement.exception.EntityNotFoundException;
+import com.example.citymanagement.exception.EntityNotUpdatedException;
 import com.example.citymanagement.model.House;
 import com.example.citymanagement.model.Person;
 import com.example.citymanagement.repository.HouseRepository;
@@ -23,23 +24,21 @@ public class HouseServiceImpl {
 
     private final PersonRepository personRepository;
     private final HouseRepository houseRepository;
-    private final HouseMapper houseMapper;
-    private final PersonMapper personMapper;
 
     @Transactional
-    public ResponseEntity<HouseDto> saveHouse(House house) {
+    public House saveHouse(House house) {
         try {
             Set<Person> personSet = new HashSet<>();
             findHouse(personSet, house);
             house.setPersons(personSet);
-            return new ResponseEntity<>(houseMapper.toHouseDto(houseRepository.save(house)), HttpStatus.OK);
+            return houseRepository.save(house);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new EntityNotCreatedException("House not created");
         }
     }
 
     @Transactional
-    public ResponseEntity<HouseDto> updateHouse(Long id, House house) {
+    public House updateHouse(Long id, House house) {
         try {
         Optional<House> houseData = houseRepository.findById(id);
         if (houseData.isPresent()) {
@@ -48,33 +47,34 @@ public class HouseServiceImpl {
             Set<Person> personSet = new HashSet<>();
             findHouse(personSet, house);
             currenthouse.setPersons(personSet);
-            return new ResponseEntity<>(houseMapper.toHouseDto(houseRepository.save(currenthouse)), HttpStatus.OK);
+            return houseRepository.save(currenthouse);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new EntityNotFoundException("House not found", id);
         }
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new EntityNotUpdatedException("House not updated", id);
         }
     }
 
-    public ResponseEntity<Set<HouseDto>> findAllHouses() {
-        return new ResponseEntity<>(personMapper.toHouseDtoList(new HashSet<>(houseRepository.findAll())), HttpStatus.OK);
+    public Set<House> findAllHouses() {
+        return new HashSet<>(houseRepository.findAll());
     }
 
-    public ResponseEntity<HouseDto> findHouseById(Long id) {
+    public House findHouseById(Long id) {
         Optional<House> houseData = houseRepository.findById(id);
-        return houseData.map(house -> new ResponseEntity<>(houseMapper.toHouseDto(house), HttpStatus.OK)).
-                orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return houseData.
+                orElseThrow(() -> new EntityNotFoundException("House not found ", id));
     }
 
     @Transactional
     public ResponseEntity<HttpStatus> deleteHouse(House house) {
+        long houseId = house.getId();
         try {
-            houseRepository.deleteById((long) house.getId());
+            houseRepository.deleteById(houseId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            throw new EntityNotDeletedException("House not deleted", houseId);
+                }
     }
 
     private void findHouse(Set<Person> personSet, House house) {

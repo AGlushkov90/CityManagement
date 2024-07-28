@@ -19,26 +19,26 @@ public class PersonControllerImpl implements PersonController {
 
     @Override
     public ResponseEntity<PersonDto> savePerson(PersonDto personDto) {
-        return personServiceImpl.savePerson(personMapper.toPerson(personDto));
+        return new ResponseEntity<>(personMapper.toPersonDto(personServiceImpl.savePerson(personMapper.toPerson(personDto))), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<Set<PersonDto>> getPersons() {
-        return personServiceImpl.findAllPersons();
+        return new ResponseEntity<>(personMapper.toPersonDtoList(personServiceImpl.findAllPersons()), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<PersonDto> getPerson(Long id) {
-        return personServiceImpl.findPersonById(id);
+        return new ResponseEntity<>(personMapper.toPersonDto(personServiceImpl.findPersonById(id)), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<HttpStatus> deletePerson(PersonDto personDto) {
-        return personServiceImpl.deletePerson(personDto);
+        return personServiceImpl.deletePerson(personMapper.toPerson(personDto));
     }
 
     @Override
     public ResponseEntity<PersonDto> updatePerson(Long id, PersonDto personDto) {
-        return personServiceImpl.updatePerson(id, personMapper.toPerson(personDto));
+        return new ResponseEntity<>(personMapper.toPersonDto(personServiceImpl.updatePerson(id, personMapper.toPerson(personDto))), HttpStatus.OK);
     }
 }

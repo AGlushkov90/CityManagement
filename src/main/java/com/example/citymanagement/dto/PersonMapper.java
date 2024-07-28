@@ -1,6 +1,7 @@
 package com.example.citymanagement.dto;
 
 import com.example.citymanagement.model.House;
+import com.example.citymanagement.model.Passport;
 import com.example.citymanagement.model.Person;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,7 +15,9 @@ public interface PersonMapper {
     Person toPerson(PersonDto personDto);
     @Mapping(target = "persons", ignore = true)
     HouseDto toHouseDto(House house);
+    @Mapping(target = "person", ignore = true)
+    PassportDto toPassportDto(Passport passport);
 
-    Set<HouseDto> toHouseDtoList(Set<House> houseList);
-    Set<House> toHouseList(Set<HouseDto> houseDtoList);
+    Set<PersonDto> toPersonDtoList(Set<Person> personList);
+    Set<Person> toPersonList(Set<PersonDto> personDtoList);
 }
