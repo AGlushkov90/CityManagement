@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class EntityInternalServerErrorExceptionHandler {
 
     @ExceptionHandler({EntityNotCreatedException.class, EntityNotFoundException.class, EntityNotDeletedException.class})
-    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<String> handleEntityInternalServerErrorException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 }

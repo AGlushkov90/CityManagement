@@ -8,20 +8,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping(value = "/api/v1/house")
 public interface HouseController {
-    @PostMapping()
+    @PostMapping("/api/v1/house")
     ResponseEntity<HouseDto> saveHouse(@RequestBody HouseDto houseDto);
 
-    @GetMapping("/all")
+    @GetMapping("/api/v1/house/all")
     ResponseEntity<Set<HouseDto>> getHouses();
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/v1/house/{id}")
     ResponseEntity<HouseDto> getHouse(@PathVariable("id") Long id);
 
-    @DeleteMapping()
+    @DeleteMapping("/api/v1/house")
     ResponseEntity<HttpStatus> deleteHouse(@RequestBody HouseDto houseDto);
 
-    @PutMapping("/{id}")
+    @PutMapping("/api/v1/house/{id}")
     ResponseEntity<HouseDto> updateHouse(@PathVariable("id") Long id, @RequestBody HouseDto houseDto);
 }

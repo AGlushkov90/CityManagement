@@ -1,9 +1,9 @@
 package com.example.citymanagement.dto;
 
-import com.example.citymanagement.model.Passport;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Data
@@ -11,6 +11,7 @@ import java.util.Set;
 public class PersonDto {
     private int id;
     private String name;
+    private BigDecimal bankAccountBalance;
     private PassportDto passport;
     private Set<HouseDto> houses;
 }

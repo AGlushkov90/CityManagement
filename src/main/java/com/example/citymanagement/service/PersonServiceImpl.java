@@ -32,8 +32,11 @@ public class PersonServiceImpl {
     public Person savePerson(Person person) {
         try {
             Set<House> houseSet = new HashSet<>();
+            if (person.getHouses() != null)
+            {
             findHouse(houseSet, person);
             person.setHouses(houseSet);
+            }
             Passport passport = passportService.savePassport();
             person.setPassport(passport);
             return personRepository.save(person);
@@ -49,6 +52,7 @@ public class PersonServiceImpl {
         if (personData.isPresent()) {
             Person currentPerson = personData.get();
             currentPerson.setName(person.getName());
+            currentPerson.setBankAccountBalance(person.getBankAccountBalance());
             Set<House> houseSet = new HashSet<>();
             findHouse(houseSet, person);
             currentPerson.setHouses(houseSet);
