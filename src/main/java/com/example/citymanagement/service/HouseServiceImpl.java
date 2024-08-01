@@ -28,9 +28,11 @@ public class HouseServiceImpl {
     @Transactional
     public House saveHouse(House house) {
         try {
-            Set<Person> personSet = new HashSet<>();
-            findHouse(personSet, house);
-            house.setPersons(personSet);
+            if(house.getPersons() != null) {
+                Set<Person> personSet = new HashSet<>();
+                findHouse(personSet, house);
+                house.setPersons(personSet);
+            }
             return houseRepository.save(house);
         } catch (Exception e) {
             throw new EntityNotCreatedException("House not created");

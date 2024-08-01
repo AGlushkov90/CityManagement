@@ -28,8 +28,11 @@ public class PersonServiceImpl {
 
     private final PassportServiceImpl passportService;
 
-    @Transactional
+    @Transactional()
+    // TODO запись в таблицу house_person идет вне транзакции. ПРобовал разную последовательность записи дома/житель результат одинаков
+    // TODO как получить Session, TransactionManager?
     public Person savePerson(Person person) {
+
         try {
             Set<House> houseSet = new HashSet<>();
             if (person.getHouses() != null)
