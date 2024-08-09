@@ -7,15 +7,16 @@ import com.example.citymanagement.exception.EntityNotUpdatedException;
 import com.example.citymanagement.model.House;
 import com.example.citymanagement.model.Passport;
 import com.example.citymanagement.model.Person;
-import com.example.citymanagement.repository.HouseRepository;
 import com.example.citymanagement.repository.PersonRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,25 +25,26 @@ import java.util.Set;
 public class PersonServiceImpl {
 
     private final PersonRepository personRepository;
-    private final HouseRepository houseRepository;
-
+    private final HouseServiceImpl  houseService;
     private final PassportServiceImpl passportService;
+    private final TransactionTemplate transactionTemplate;
 
-    @Transactional()
-    // TODO запись в таблицу house_person идет вне транзакции. ПРобовал разную последовательность записи дома/житель результат одинаков
-    // TODO как получить Session, TransactionManager?
+
+    //    @Transactional()
     public Person savePerson(Person person) {
 
         try {
-            Set<House> houseSet = new HashSet<>();
-            if (person.getHouses() != null)
-            {
-            findHouse(houseSet, person);
-            person.setHouses(houseSet);
-            }
-            Passport passport = passportService.savePassport();
-            person.setPassport(passport);
-            return personRepository.save(person);
+            return transactionTemplate.execute(status -> {
+                Set<House> houseSet = new HashSet<>();
+                if (person.getHouses() != null)
+                {
+                    findHouse(houseSet, person);
+                    person.setHouses(houseSet);
+                }
+                Passport passport = passportService.savePassport();
+                person.setPassport(passport);
+                return personRepository.save(person);
+            });
         } catch (Exception e) {
             throw new EntityNotCreatedException("Person not created");
         }
@@ -78,7 +80,7 @@ public class PersonServiceImpl {
                 orElseThrow(() -> new EntityNotFoundException("Person not found ", id));
     }
 
-    @Transactional
+     @Transactional
     public ResponseEntity<HttpStatus> deletePerson(Person person) {
         long personId = person.getId();
         try {
@@ -91,12 +93,8 @@ public class PersonServiceImpl {
 
     private void findHouse(Set<House> houseSet, Person person) {
         for (House h : person.getHouses()) {
-            Optional<House> houseData = houseRepository.findByAddress(h.getAddress());
-            if (houseData.isPresent()) {
-                houseSet.add(houseData.get());
-            } else {
-                houseSet.add(h);
-            }
+            House houseData = houseService.findByAddress(h.getAddress());
+            houseSet.add(Objects.requireNonNullElse(houseData, h));
         }
     }
 }

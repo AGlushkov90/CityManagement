@@ -26,7 +26,6 @@ public class LotteryAspect {
         }
         Object[] arguments = joinPoint.getArgs();
         for (Object arg : arguments) {
-            // TODO Как правильно здесь проверить на тип параметра
             if (arg instanceof Set<?>){
                 Set<Person> persons = ((Set<Person>) arg).stream().filter(p -> p.getHouses().isEmpty()).collect(Collectors.toSet());
                 int numberOfHappyPerson = GenerateNumber.generateNumber(persons.size());

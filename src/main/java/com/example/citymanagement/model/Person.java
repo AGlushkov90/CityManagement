@@ -2,12 +2,16 @@ package com.example.citymanagement.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
 @Entity
 @Data
+@EqualsAndHashCode(exclude = {"houses", "passport"})
+@ToString(exclude = {"houses", "passport"})
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

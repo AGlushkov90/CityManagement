@@ -17,8 +17,6 @@ public class LotteryServiceImpl {
     private final PersonServiceImpl personService;
     @Scheduled(fixedRate = 5000)
     public void startLottery(){
-        // TODO Чем отличается от вызова personService.findAllPersons() через контроллер, где сессия открывается?
-        // TODO Почему тянется houses сразу, ведь он fetch = FetchType.LAZY
         Set<Person> persons = personService.findAllPersons();
         if(persons.isEmpty()){
             return;

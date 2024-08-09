@@ -79,6 +79,10 @@ public class HouseServiceImpl {
                 }
     }
 
+    public House findByAddress(String Address){
+        return houseRepository.findByAddress(Address).orElse(null);
+    }
+
     private void findHouse(Set<Person> personSet, House house) {
         for (Person p : house.getPersons()) {
             Optional<Person> personData = personRepository.findById((long) p.getId());
