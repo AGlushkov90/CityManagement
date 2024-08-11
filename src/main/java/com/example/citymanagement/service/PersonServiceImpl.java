@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -72,6 +69,14 @@ public class PersonServiceImpl {
 
     public Set<Person> findAllPersons() {
         return new HashSet<>(personRepository.findAll());
+    }
+
+    public Set<Person> findByStreet(String street){
+        return new HashSet<>(personRepository.findByStreet(street));
+    }
+
+    public Set<Passport> findAllPassportsByPersonName(String letter){
+        return new HashSet<>(passportService.findAllPassportsByPersonName(letter));
     }
 
     public Person findPersonById(Long id) {

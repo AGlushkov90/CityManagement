@@ -12,6 +12,7 @@ import java.util.Set;
 public class HouseDto {
     private int id;
     private String address;
+    private String street;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<PersonDto> persons;
 }

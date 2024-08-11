@@ -16,6 +16,7 @@ public class House {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String address;
+    private String street;
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "house_person",

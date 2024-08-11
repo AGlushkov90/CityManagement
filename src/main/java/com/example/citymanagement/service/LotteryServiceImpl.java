@@ -4,7 +4,6 @@ import com.example.citymanagement.aspect.LotteryCheater;
 import com.example.citymanagement.model.Person;
 import com.example.citymanagement.utils.GenerateNumber;
 import lombok.AllArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,7 +14,7 @@ import java.util.Set;
 public class LotteryServiceImpl {
 
     private final PersonServiceImpl personService;
-    @Scheduled(fixedRate = 5000)
+//    @Scheduled(fixedRate = 5000)
     public void startLottery(){
         Set<Person> persons = personService.findAllPersons();
         if(persons.isEmpty()){

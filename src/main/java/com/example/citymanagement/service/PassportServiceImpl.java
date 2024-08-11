@@ -6,6 +6,9 @@ import com.example.citymanagement.repository.PassportRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 @AllArgsConstructor
 public class PassportServiceImpl {
@@ -20,6 +23,10 @@ public class PassportServiceImpl {
         } catch (Exception e) {
             throw new EntityNotCreatedException("Passport not created from person");
         }
+    }
+
+    public Set<Passport> findAllPassportsByPersonName(String letter){
+        return new HashSet<>(passportRepository.findAllPassportsByPersonName(letter));
     }
 
     private String generateNumber() {

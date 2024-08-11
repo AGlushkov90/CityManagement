@@ -1,5 +1,7 @@
 package com.example.citymanagement.controller;
 
+import com.example.citymanagement.dto.PassportDto;
+import com.example.citymanagement.dto.PassportMapper;
 import com.example.citymanagement.dto.PersonDto;
 import com.example.citymanagement.dto.PersonMapper;
 import com.example.citymanagement.service.PersonServiceImpl;
@@ -16,6 +18,7 @@ public class PersonControllerImpl implements PersonController {
 
     private final PersonServiceImpl personServiceImpl;
     private final PersonMapper personMapper;
+    private final PassportMapper passportMapper;
 
     @Override
     public ResponseEntity<PersonDto> savePerson(PersonDto personDto) {
@@ -25,6 +28,16 @@ public class PersonControllerImpl implements PersonController {
     @Override
     public ResponseEntity<Set<PersonDto>> getPersons() {
         return new ResponseEntity<>(personMapper.toPersonDtoList(personServiceImpl.findAllPersons()), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Set<PersonDto>> findByStreet(String street) {
+        return new ResponseEntity<>(personMapper.toPersonDtoList(personServiceImpl.findByStreet(street)), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Set<PassportDto>> findByLetter(String letter) {
+        return new ResponseEntity<>(passportMapper.toPassportDtoList(personServiceImpl.findAllPassportsByPersonName(letter)), HttpStatus.OK);
     }
 
     @Override
