@@ -8,9 +8,6 @@ import org.jooq.generated.tables.Car;
 import org.jooq.generated.tables.records.CarRecord;
 import org.springframework.stereotype.Component;
 
-import static org.jooq.generated.tables.Car.CAR;
-
-
 @Component
 @RequiredArgsConstructor
 public class CarRecordUnmapper implements RecordUnmapper<Car, CarRecord> {

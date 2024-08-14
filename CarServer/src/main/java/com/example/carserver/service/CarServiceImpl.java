@@ -3,7 +3,6 @@ package com.example.carserver.service;
 import com.example.carserver.dto.CarDto;
 import com.example.carserver.repository.CarRepository;
 import lombok.AllArgsConstructor;
-import org.jooq.generated.tables.Car;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
