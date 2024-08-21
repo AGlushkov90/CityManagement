@@ -1,7 +1,7 @@
 package com.example.carserver.controller;
 
 import com.example.carserver.dto.CarDto;
-import com.example.carserver.dto.CarMapper;
+import com.example.carserver.dto.PersonDto;
 import com.example.carserver.service.CarServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,5 +39,10 @@ public class CarControllerImpl implements CarController {
     @Override
     public ResponseEntity<CarDto> updateCar(int id, CarDto carDto) {
         return new ResponseEntity<>(carService.updateCar(id, carDto), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<CarDto> setOwner(int id, PersonDto personDto) {
+        return new ResponseEntity<>(carService.setOwner(id, personDto), HttpStatus.OK);
     }
 }

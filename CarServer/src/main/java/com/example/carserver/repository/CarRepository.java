@@ -31,7 +31,8 @@ public class CarRepository {
     public CarDto getCar(int id) {
         return dsl.selectFrom(Car.CAR)
                 .where(Car.CAR.ID.eq(id))
-                .fetchAny()
+                .fetchOptional()
+                .orElseThrow(() -> new RuntimeException("Car not found"))
                 .into(CarDto.class);
     }
 
