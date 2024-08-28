@@ -1,0 +1,23 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: Gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          lower-case-service-id: true
+      mvc:
+        routes:
+        - id: employeeModule
+#          uri: lb://CITYMANAGEMENT
+          uri: http://localhost:8080
+          predicates:
+            - Path=/api/v1/person/**
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    preferIpAddress: true
