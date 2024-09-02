@@ -28,6 +28,12 @@ public class CarRepository {
                 .fetchInto(CarDto.class));
     }
 
+    public boolean deleteCarsByPersonId(int person_Id) {
+        return dsl.deleteFrom(Car.CAR)
+                .where(Car.CAR.PERSON_ID.eq(person_Id))
+                .execute() == 1;
+    }
+
     public CarDto getCar(int id) {
         return dsl.selectFrom(Car.CAR)
                 .where(Car.CAR.ID.eq(id))

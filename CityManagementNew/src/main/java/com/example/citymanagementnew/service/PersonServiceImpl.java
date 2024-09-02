@@ -4,6 +4,7 @@ import com.example.citymanagementnew.exception.EntityNotCreatedException;
 import com.example.citymanagementnew.exception.EntityNotDeletedException;
 import com.example.citymanagementnew.exception.EntityNotFoundException;
 import com.example.citymanagementnew.exception.EntityNotUpdatedException;
+import com.example.citymanagementnew.kafka.KafkaTestProducer;
 import com.example.citymanagementnew.model.House;
 import com.example.citymanagementnew.model.Passport;
 import com.example.citymanagementnew.model.Person;
@@ -25,6 +26,7 @@ public class PersonServiceImpl {
     private final HouseServiceImpl  houseService;
     private final PassportServiceImpl passportService;
     private final TransactionTemplate transactionTemplate;
+    private KafkaTestProducer kafkaTestProducer;
 
 
     //    @Transactional()
@@ -90,6 +92,7 @@ public class PersonServiceImpl {
         long personId = person.getId();
         try {
             personRepository.deleteById(personId);
+            kafkaTestProducer.sendMessage("deleteCar", String.valueOf(personId));
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             throw new EntityNotDeletedException("Person not deleted", personId);

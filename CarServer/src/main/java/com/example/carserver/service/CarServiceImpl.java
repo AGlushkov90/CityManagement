@@ -45,12 +45,15 @@ public class CarServiceImpl {
         return carRepository.deleteCar(carDto) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    public ResponseEntity<HttpStatus> deleteCarsByPersonId(int personId) {
+        return carRepository.deleteCarsByPersonId(personId) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
 
     public CarDto updateCar(int id, CarDto carDto) {
         return  carRepository.updateCar(id, carDto);
     }
 
-    // TODO при вызове restclient при несуществующем id выбрасывается исключение. Как правильно?
     public CarDto setOwner(int id, PersonDto personDto) {
         ServiceInstance  serviceInstance = discoveryClient.getInstances("CITYMANAGEMENT").get(0);
         ResponseEntity<PersonDto> result = restClient.get()

@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @RestController
 @AllArgsConstructor
@@ -52,9 +54,7 @@ public class PersonControllerImpl implements PersonController {
 
     @Override
     public ResponseEntity<HttpStatus> deletePerson(PersonDto personDto) {
-        for (CarDto carDto : personDto.getCars()) {
-            carClient.deleteCar(carDto);
-        }
+        Stream.ofNullable(personDto.getCars()).flatMap(Collection::stream).forEach(carClient::deleteCar);
         return personServiceImpl.deletePerson(personMapper.toPerson(personDto));
     }
 
