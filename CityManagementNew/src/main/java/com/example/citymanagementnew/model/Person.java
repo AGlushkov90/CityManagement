@@ -21,7 +21,8 @@ public class Person {
     @JoinColumn(name = "passport_id", referencedColumnName = "id")
     private Passport passport;
     private BigDecimal bankAccountBalance;
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    private boolean deleted;
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "house_person",
             joinColumns = {@JoinColumn(name = "person_id")},

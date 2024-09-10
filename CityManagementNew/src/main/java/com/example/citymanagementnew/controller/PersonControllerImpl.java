@@ -1,17 +1,16 @@
 package com.example.citymanagementnew.controller;
 
-//import com.example.FeignClient.client.CarDto;
-//import com.example.citymanagement.client.CarClient;
-import com.example.FeignClient.client.CarDto;
 import com.example.citymanagementnew.client.CarClient;
 import com.example.citymanagementnew.dto.PassportDto;
 import com.example.citymanagementnew.dto.PassportMapper;
 import com.example.citymanagementnew.dto.PersonDto;
 import com.example.citymanagementnew.dto.PersonMapper;
+import com.example.citymanagementnew.model.MyUser;
 import com.example.citymanagementnew.service.PersonServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
@@ -48,11 +47,13 @@ public class PersonControllerImpl implements PersonController {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('Role_User') && hasAuthority('Role_Admin')")
     public ResponseEntity<PersonDto> getPerson(Long id) {
         return new ResponseEntity<>(personMapper.toPersonDto(personServiceImpl.findPersonById(id)), HttpStatus.OK);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('Role_Admin')")
     public ResponseEntity<HttpStatus> deletePerson(PersonDto personDto) {
         Stream.ofNullable(personDto.getCars()).flatMap(Collection::stream).forEach(carClient::deleteCar);
         return personServiceImpl.deletePerson(personMapper.toPerson(personDto));
@@ -61,5 +62,11 @@ public class PersonControllerImpl implements PersonController {
     @Override
     public ResponseEntity<PersonDto> updatePerson(Long id, PersonDto personDto) {
         return new ResponseEntity<>(personMapper.toPersonDto(personServiceImpl.updatePerson(id, personMapper.toPerson(personDto))), HttpStatus.OK);
+    }
+
+    @Override
+    public String addUser(MyUser user) {
+        personServiceImpl.addUser(user);
+        return "User is saved";
     }
 }

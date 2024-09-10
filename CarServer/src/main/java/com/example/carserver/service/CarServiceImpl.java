@@ -2,12 +2,14 @@ package com.example.carserver.service;
 
 import com.example.carserver.dto.CarDto;
 import com.example.carserver.dto.PersonDto;
+import com.example.carserver.kafka.KafkaTestProducer;
 import com.example.carserver.repository.CarRepository;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 import java.util.Set;
@@ -19,11 +21,13 @@ public class CarServiceImpl {
     private final CarRepository carRepository;
     private final DiscoveryClient discoveryClient;
     private final RestClient restClient;
+    private final KafkaTestProducer kafkaTestProducer;
 
-    public CarServiceImpl(CarRepository carRepository, DiscoveryClient discoveryClient, RestClient.Builder restClientBuilder) {
+    public CarServiceImpl(CarRepository carRepository, DiscoveryClient discoveryClient, RestClient.Builder restClientBuilder, KafkaTestProducer kafkaTestProducer) {
         this.carRepository = carRepository;
         this.discoveryClient = discoveryClient;
         this.restClient = restClientBuilder.build();
+        this.kafkaTestProducer = kafkaTestProducer;
     }
 
     public CarDto saveCar(CarDto carDto) {
@@ -45,8 +49,15 @@ public class CarServiceImpl {
         return carRepository.deleteCar(carDto) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @Transactional
     public ResponseEntity<HttpStatus> deleteCarsByPersonId(int personId) {
-        return carRepository.deleteCarsByPersonId(personId) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            throw new RuntimeException();
+//            return carRepository.deleteCarsByPersonId(personId) ? new ResponseEntity<>(HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            kafkaTestProducer.sendMessage("cancelDeleteCar", String.valueOf(personId));
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 

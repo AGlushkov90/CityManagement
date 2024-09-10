@@ -2,6 +2,7 @@ package com.example.citymanagementnew.controller;
 
 import com.example.citymanagementnew.dto.PassportDto;
 import com.example.citymanagementnew.dto.PersonDto;
+import com.example.citymanagementnew.model.MyUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,6 @@ public interface PersonController {
     @GetMapping("/api/v1/person/all")
     ResponseEntity<Set<PersonDto>> getPersons();
 
-    // TODO Как передавать параметры аналогичные street
     @GetMapping("/api/v1/person/findByStreet/{street}")
     ResponseEntity<Set<PersonDto>> findByStreet(@PathVariable("street") String street);
 
@@ -31,4 +31,7 @@ public interface PersonController {
 
     @PutMapping("/api/v1/person/{id}")
     ResponseEntity<PersonDto> updatePerson(@PathVariable("id") Long id, @RequestBody PersonDto personDto);
+
+    @PostMapping("/api/v1/new-user")
+    String addUser(@RequestBody MyUser user);
 }

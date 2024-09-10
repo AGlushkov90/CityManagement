@@ -1,4 +1,4 @@
-package com.example.citymanagementnew.config;
+package com.example.carserver.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
