@@ -27,11 +27,13 @@ public class PersonControllerImpl implements PersonController {
      private final CarClient carClient;
 
     @Override
+    @PreAuthorize("hasRole('Role_Admin')")
     public ResponseEntity<PersonDto> savePerson(PersonDto personDto) {
         return new ResponseEntity<>(personMapper.toPersonDto(personServiceImpl.savePerson(personMapper.toPerson(personDto))), HttpStatus.OK);
     }
 
     @Override
+    @PreAuthorize("hasAuthority('Role_Admin')")
     public ResponseEntity<Set<PersonDto>> getPersons() {
         return new ResponseEntity<>(personMapper.toPersonDtoList(personServiceImpl.findAllPersons()), HttpStatus.OK);
     }
@@ -53,7 +55,6 @@ public class PersonControllerImpl implements PersonController {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('Role_Admin')")
     public ResponseEntity<HttpStatus> deletePerson(PersonDto personDto) {
         Stream.ofNullable(personDto.getCars()).flatMap(Collection::stream).forEach(carClient::deleteCar);
         return personServiceImpl.deletePerson(personMapper.toPerson(personDto));

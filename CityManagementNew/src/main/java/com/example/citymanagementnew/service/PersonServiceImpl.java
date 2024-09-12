@@ -1,5 +1,8 @@
 package com.example.citymanagementnew.service;
 
+import com.example.citymanagementnew.config.MyUserDetails;
+import com.example.citymanagementnew.dto.jwt.JwtAuthenticationDto;
+import com.example.citymanagementnew.dto.jwt.UserCredentialsDto;
 import com.example.citymanagementnew.exception.EntityNotCreatedException;
 import com.example.citymanagementnew.exception.EntityNotDeletedException;
 import com.example.citymanagementnew.exception.EntityNotFoundException;
@@ -11,13 +14,16 @@ import com.example.citymanagementnew.model.Passport;
 import com.example.citymanagementnew.model.Person;
 import com.example.citymanagementnew.repository.PersonRepository;
 import com.example.citymanagementnew.repository.UserRepository;
+import com.example.citymanagementnew.security.jwt.JwtService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import javax.naming.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import com.example.citymanagementnew.dto.jwt.RefreshTokenDto;
 
 import java.util.*;
 
@@ -32,6 +38,7 @@ public class PersonServiceImpl {
     private KafkaTestProducer kafkaTestProducer;
     private UserRepository repository;
     private PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
 
     //    @Transactional()
@@ -130,5 +137,34 @@ public class PersonServiceImpl {
     public void addUser(MyUser user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
+    }
+
+
+    public JwtAuthenticationDto singIn(UserCredentialsDto userCredentialsDto) throws Exception {
+        MyUser user = findByCredentials(userCredentialsDto);
+        return jwtService.generateAuthToken(user.getName());
+    }
+
+
+    public JwtAuthenticationDto refreshToken(RefreshTokenDto refreshTokenDto) throws Exception {
+        String refreshToken = refreshTokenDto.getRefreshToken();
+        if (refreshToken != null && jwtService.validateJwtToken(refreshToken)) {
+            MyUser user = findByName(jwtService.getNameFromToken(refreshToken));
+            return jwtService.refreshBaseToken(user.getName(), refreshToken);
+        }
+        throw new  AuthenticationException("Invalid refresh token");
+    }
+
+    private MyUser findByCredentials(UserCredentialsDto userCredentialsDto) throws Exception {
+        MyUser user = findByName(userCredentialsDto.getName());
+            if (passwordEncoder.matches(userCredentialsDto.getPassword(), user.getPassword())){
+                return user;
+        }
+        throw new AuthenticationException("Nsme or password is not correct");
+    }
+
+    private MyUser findByName(String name) throws Exception {
+        return repository.findByName(name).orElseThrow(()->
+                new Exception(String.format("User with name %s not found", name)));
     }
 }
