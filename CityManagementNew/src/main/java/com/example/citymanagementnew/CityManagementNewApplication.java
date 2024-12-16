@@ -1,19 +1,17 @@
-package com.example.citymanagement;
+package com.example.citymanagementnew;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-
 @EnableScheduling
+@EnableFeignClients
 @SpringBootApplication
-public class CityManagementApplication {
+public class CityManagementNewApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CityManagementApplication.class, args);
-
-
+        SpringApplication.run(CityManagementNewApplication.class, args);
     }
-
 
 }
