@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "PersonAvro",
+  "namespace": "com.foreach.schema",
+  "fields": [
+    {
+      "name": "id",
+      "type": "int"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    }
+  ]
+}
